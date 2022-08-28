@@ -2,7 +2,7 @@
 
 #if BOOST_OS_WINDOWS
 
-#include <Windows.h>
+#include <windows.h>
 
 typedef LONG NTSTATUS;
 

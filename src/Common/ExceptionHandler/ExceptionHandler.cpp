@@ -7,7 +7,7 @@
 #endif
 
 #if BOOST_OS_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #include <Dbghelp.h>
 #include <shellapi.h>
 

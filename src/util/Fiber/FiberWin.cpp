@@ -1,6 +1,6 @@
 #include "Fiber.h"
 #if BOOST_OS_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 
 thread_local Fiber* sCurrentFiber{};
 

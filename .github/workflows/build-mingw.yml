@@ -1,0 +1,33 @@
+name: Build Cemu with MinGW-w64 + Ubuntu 22.04
+
+on:
+  push:
+    branches: [ "build-for-mingw-on-ubuntu" ]
+  workflow_dispatch:
+
+env:
+  VCPKG_ROOT: "${{github.workspace}}/dependencies/vcpkg"
+  VCPKG_OVERLAY_PORTS: "${{github.workspace}}/dependencies/vcpkg_overlay_ports"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Install MinGW-w64
+        run: sudo apt install mingw-w64{,-{x86-64,i686}-dev} g{cc,++}-mingw-w64{,-i686,-x86-64}
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+
+      - name: Setup vcpkg
+        run: dependencies/vcpkg/bootstrap-vcpkg.sh
+
+      - run: dependencies/vcpkg/vcpkg --triplet=x64-mingw-static install
+
+      - name: CMake
+        run: |
+          cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=x86_64-w64-mingw32.cmake -DENABLE_XAUDIO=OFF
+          cmake --build build "-j$(nproc)"

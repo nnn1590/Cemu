@@ -34,3 +34,5 @@ bin/controllerProfiles/*
 
 !bin/gameProfiles/default/*
 bin/gameProfiles/*
+
+vcpkg_installed/

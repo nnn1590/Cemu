@@ -12,6 +12,7 @@ on:
       - "*.md"
     branches:
       - main
+      - build
   workflow_dispatch:
 
 jobs:

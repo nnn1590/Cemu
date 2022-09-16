@@ -1,6 +1,6 @@
 project(cemuMain)
 
-option(CEMU_CXX_FLAGS "Additional flags used for compiling Cemu source code")
+option(CEMU_CXX_FLAGS "Additional flags used for compiling Cemu source code (semicolon-separated)")
 if(CEMU_CXX_FLAGS)
 	add_compile_options(${CEMU_CXX_FLAGS})
 endif()

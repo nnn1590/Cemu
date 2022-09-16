@@ -1,7 +1,7 @@
 #include "input/api/Wiimote/windows/WinWiimoteDevice.h"
 
 #include <hidsdi.h>
-#include <SetupAPI.h>
+#include <setupapi.h>
 
 WinWiimoteDevice::WinWiimoteDevice(HANDLE handle, std::vector<uint8_t> identifier)
 	: m_handle(handle), m_identifier(std::move(identifier))

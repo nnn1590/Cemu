@@ -1,8 +1,8 @@
 #include "Common/precompiled.h"
 #include "Cafe/CafeSystem.h"
 
-#include <Windows.h>
-#include <Dbghelp.h>
+#include <windows.h>
+#include <dbghelp.h>
 #include <shellapi.h>
 
 #include "Config/ActiveSettings.h"

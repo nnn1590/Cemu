@@ -9,7 +9,7 @@
 #include "Cafe/OS/libs/coreinit/coreinit.h"
 
 #if BOOST_OS_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 debuggerState_t debuggerState{ };

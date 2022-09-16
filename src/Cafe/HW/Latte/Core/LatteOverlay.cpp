@@ -16,7 +16,7 @@
 #include <cinttypes>
 
 #if BOOST_OS_WINDOWS
-#include <Psapi.h>
+#include <psapi.h>
 #include <winternl.h>
 #pragma comment(lib, "ntdll.lib")
 #endif

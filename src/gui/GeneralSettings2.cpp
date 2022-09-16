@@ -32,7 +32,7 @@
 #include "config/PermanentStorage.h"
 
 #if BOOST_OS_WINDOWS
-#include <VersionHelpers.h>
+#include <versionhelpers.h>
 #endif
 
 #include "config/LaunchSettings.h"

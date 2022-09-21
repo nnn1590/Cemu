@@ -11,6 +11,7 @@ vcpkg_from_github(
         0003-sdl2-disable-sdlmain-target-search-on-uwp.patch
         0004-Define-crt-macros.patch
         0005-emscripten-fix-undefined-symbol-errors-in-non-threaded.patch
+        0006-mingw-workaround.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SDL_STATIC)

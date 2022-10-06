@@ -1,6 +1,6 @@
 project(CemuAsm C)
 
-if (WIN32)
+if (WIN32 AND MSVC)
 
 	enable_language(C ASM_MASM)
 
@@ -17,6 +17,8 @@ else()
 	# NASM
 	if (APPLE)
 		set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -g -Fdwarf -f macho64 --prefix _ -o <OBJECT> <SOURCE>")
+	elseif (WIN32)
+		set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -g -f win64 -o <OBJECT> <SOURCE>")
 	else()
 		set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> -g -Fdwarf -f elf64 -o <OBJECT> <SOURCE>")
 	endif()
@@ -29,6 +31,8 @@ else()
 
 	if (APPLE)
 		set_target_properties(CemuAsm PROPERTIES NASM_OBJ_FORMAT macho64)
+	elseif (WIN32)
+		set_target_properties(CemuAsm PROPERTIES NASM_OBJ_FORMAT win64)
 	else()
 		set_target_properties(CemuAsm PROPERTIES NASM_OBJ_FORMAT elf64)
 	endif()

@@ -57,3 +57,17 @@ You can use it by replacing the step 3 with the following:
  - If step 4 gives you an error that contains something like `main.cpp.o: in function 'std::__cxx11::basic_string...`, you likely are experiencing a clang-14 issue. This can only be fixed by either lowering the clang version or using GCC, see below.
  - If step 4 gives you a different error, you could report it to this repo or try using GCC. Just make sure your standard library and compilers are updated since Cemu uses a lot of modern features!
 - If step 4 gives you undefined libdecor_xx, you are likely experiencing an issue with sdl2 package that comes with vcpkg. Delete sdl2 from vcpkg.json in source file and recompile
+
+## Cross-compiling for Windows on GNU/Linux with MinGW-w64
+Tested with Ubuntu 20.04 + `x86_64-w64-mingw32-gcc (crosstool-NG 1.25.0) 11.2.0` (posix thread model)
+
+### Build Cemu using CMake and GCC
+```bash
+git clone --recursive https://github.com/cemu-project/Cemu.git
+cd Cemu
+export PKG_CONFIG_LIBDIR="${PWD}/build/vcpkg_installed/x64-mingw-static/lib/pkgconfig:/usr/local/x86_64-w64-mingw32/lib/pkgconfig:/usr/local/x86_64-w64-mingw32/share/pkgconfig:/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/x86_64-w64-mingw32/share/pkgconfig"
+export PKG_CONFIG_SYSROOT_DIR=/
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=x86_64-w64-mingw32.cmake -DENABLE_XAUDIO=OFF -DCEMU_CXX_FLAGS="-msse4.1;-maes;-mavx512f" -G Ninja -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
+cmake --build build
+# You should now have a Cemu executable file in the /bin folder, which you can run using `wine ./bin/Cemu_release.exe`
+```

@@ -156,7 +156,11 @@ from_chars_result from_chars_advanced(const char *first, const char *last,
 #endif
 
 #if ((defined(_WIN32) || defined(_WIN64)) && !defined(__clang__))
+#ifdef _MSC_VER
 #include <intrin.h>
+#else
+#include <x86intrin.h>
+#endif
 #endif
 
 #if defined(_MSC_VER) && !defined(__clang__)

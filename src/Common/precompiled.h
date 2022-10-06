@@ -144,6 +144,8 @@ inline uint64 _swapEndianU64(uint64 v)
 {
 #if BOOST_OS_MACOS
     return OSSwapInt64(v);
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+    return _bswap64(v);
 #else
     return bswap_64(v);
 #endif
@@ -153,6 +155,8 @@ inline uint32 _swapEndianU32(uint32 v)
 {
 #if BOOST_OS_MACOS
     return OSSwapInt32(v);
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+    return bswap(v);
 #else
     return bswap_32(v);
 #endif
@@ -162,6 +166,8 @@ inline sint32 _swapEndianS32(sint32 v)
 {
 #if BOOST_OS_MACOS
     return (sint32)OSSwapInt32((uint32)v);
+#elif defined(__MINGW32__) || defined(__MINGW64__)
+    return (sint32)bswap((uint32)v);
 #else
     return (sint32)bswap_32((uint32)v);
 #endif

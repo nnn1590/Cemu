@@ -3,7 +3,16 @@
 #include "Cafe/OS/libs/coreinit/coreinit_MEM.h"
 #include "Cafe/OS/libs/coreinit/coreinit_Thread.h"
 #include "Cafe/OS/RPL/rpl.h"
-
+// MinGW defines _iob which conflicts with this source.
+// So, undefine that (and __iob_func)
+#if defined(__MINGW32__) || defined(__MINGW32__)
+#	ifdef _iob
+#		undef _iob
+#	endif
+#	ifdef __iob_func
+#		undef __iob_func
+#	endif
+#endif
 namespace coreinit
 {
 	struct iobbuf

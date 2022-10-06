@@ -15,8 +15,14 @@ if (ENABLE_VCPKG)
 	# Set this so that all the various find_package() calls don't need an explicit
 	# CONFIG option
 	set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
-	if (WIN32)
-		set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+	if (DEFINED VCPKG_TARGET_TRIPLET)
+		set(VCPKG_TARGET_TRIPLET "${VCPKG_TARGET_TRIPLET}" CACHE STRING "")
+	else()
+		if (WIN32 AND MSVC)
+			set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+		elseif (WIN32 AND NOT MSVC)
+			set(VCPKG_TARGET_TRIPLET "x64-mingw-static" CACHE STRING "")
+		endif()
 	endif()
 endif()
 

@@ -61,5 +61,7 @@ LPCDIDATAFORMAT DirectInputControllerProvider::get_data_format() const
 	/*if (m_GetdfDIJoystick)
 		return m_GetdfDIJoystick();*/
 
-	return GetdfDIJoystick();
+	//return GetdfDIJoystick();
+
+	return &c_dfDIJoystick;
 }

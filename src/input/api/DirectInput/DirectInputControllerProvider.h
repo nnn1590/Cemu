@@ -29,7 +29,7 @@ private:
 	HMODULE m_module = nullptr;
 
 	decltype(&DirectInput8Create) m_DirectInput8Create;
-	decltype(&GetdfDIJoystick) m_GetdfDIJoystick = nullptr;
+	//decltype(&GetdfDIJoystick) m_GetdfDIJoystick = nullptr;
 
 	IDirectInput8* m_dinput8 = nullptr;
 };

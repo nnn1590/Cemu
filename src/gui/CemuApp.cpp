@@ -104,7 +104,15 @@ bool CemuApp::OnInit()
 	{
 		const auto filename = parent_path.filename().generic_string();
 		if (boost::icontains(filename, "WiiU_USB_Helper"))
+// Currenly(2022-9-24), MinGW/MinGW-w64 has no definition of __fastfail(unsigned int).
+// From mingw-w64/mingw-w64-headers/include/winnt.h:
+// > TODO: Check implementation of
+// > DECLSPEC_NORETURN VOID __fastfail (unsigned int);
+#if defined(__MINGW32__) || defined(__MINGW64__)
+			ExitProcess(0);
+#else
 			__fastfail(0);
+#endif
 	}
 #endif
 

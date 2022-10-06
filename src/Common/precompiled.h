@@ -183,6 +183,7 @@ inline sint16 _swapEndianS16(sint16 v)
     return (sint16)(((uint16)v >> 8) | ((uint16)v << 8));
 }
 
+#ifndef _WIN32
 inline uint64 _umul128(uint64 multiplier, uint64 multiplicand, uint64 *highProduct) {
     unsigned __int128 x = (unsigned __int128)multiplier * (unsigned __int128)multiplicand;
     *highProduct = (x >> 64);
@@ -214,7 +215,9 @@ typedef union _LARGE_INTEGER {
     inline T& operator|= (T& a, T b) { return reinterpret_cast<T&>( reinterpret_cast<std::underlying_type<T>::type&>(a) |= static_cast<std::underlying_type<T>::type>(b) ); }   \
     inline T& operator&= (T& a, T b) { return reinterpret_cast<T&>( reinterpret_cast<std::underlying_type<T>::type&>(a) &= static_cast<std::underlying_type<T>::type>(b) ); }   \
     inline T& operator^= (T& a, T b) { return reinterpret_cast<T&>( reinterpret_cast<std::underlying_type<T>::type&>(a) ^= static_cast<std::underlying_type<T>::type>(b) ); }
-#endif
+
+#endif  // !_WIN32
+#endif  // _MSC_VER
 
 #if !defined(_MSC_VER) || defined(__clang__) // clang-cl does not have built-in _udiv128
 inline uint64 _udiv128(uint64 highDividend, uint64 lowDividend, uint64 divisor, uint64 *remainder)

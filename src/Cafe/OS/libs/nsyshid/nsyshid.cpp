@@ -4,10 +4,11 @@
 #include "nsyshid.h"
 
 #if BOOST_OS_WINDOWS
-
-#include <setupapi.h>
-#include <initguid.h>
-#include <hidsdi.h>
+extern "C" {
+#	include <setupapi.h>
+#	include <initguid.h>
+#	include <hidsdi.h>
+}
 
 #include "Cafe/OS/libs/coreinit/coreinit_Thread.h"
 

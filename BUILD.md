@@ -67,7 +67,7 @@ git clone --recursive https://github.com/cemu-project/Cemu.git
 cd Cemu
 export PKG_CONFIG_LIBDIR="${PWD}/build/vcpkg_installed/x64-mingw-static/lib/pkgconfig:/usr/local/x86_64-w64-mingw32/lib/pkgconfig:/usr/local/x86_64-w64-mingw32/share/pkgconfig:/usr/x86_64-w64-mingw32/lib/pkgconfig:/usr/x86_64-w64-mingw32/share/pkgconfig"
 export PKG_CONFIG_SYSROOT_DIR=/
-cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=x86_64-w64-mingw32.cmake -DENABLE_XAUDIO=OFF -DCEMU_CXX_FLAGS="-msse4.1;-maes;-mavx512f" -G Ninja -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
+cmake -S . -B build -DCMAKE_BUILD_TYPE=release -DCMAKE_TOOLCHAIN_FILE=x86_64-w64-mingw32.cmake -DENABLE_XAUDIO=OFF -DCEMU_CXX_FLAGS="-msse4.1;-maes;-mavx512f" -G Ninja -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
 cmake --build build
 # You should now have a Cemu executable file in the /bin folder, which you can run using `wine ./bin/Cemu_release.exe`
 ```

@@ -5,8 +5,8 @@
 #include <dbghelp.h>
 #include <shellapi.h>
 
-#include "Config/ActiveSettings.h"
-#include "Config/CemuConfig.h"
+#include "config/ActiveSettings.h"
+#include "config/CemuConfig.h"
 #include "Cafe/OS/libs/coreinit/coreinit_Thread.h"
 #include "Cafe/HW/Espresso/PPCState.h"
 

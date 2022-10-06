@@ -148,11 +148,13 @@ void SetThreadName(const char* name)
 	info.dwFlags = 0;
 #pragma warning(push)
 #pragma warning(disable: 6320 6322)
+#ifdef _MSC_VER
 	__try {
 		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER) {
 	}
+#endif
 #pragma warning(pop)
 	
 #endif

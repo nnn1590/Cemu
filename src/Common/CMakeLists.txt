@@ -45,6 +45,10 @@ if (UNIX AND NOT APPLE)
 	target_link_libraries(CemuCommon PRIVATE X11::X11 X11::Xrender X11::Xutil)
 endif()
 
+if(WIN32)
+	target_link_libraries(CemuCommon PRIVATE hid dbghelp)
+endif()
+
 # PUBLIC because:
 # - boost/predef/os.h is included in platform.h
 # - fmt/core.h is included in precompiled.h

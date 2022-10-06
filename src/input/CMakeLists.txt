@@ -109,3 +109,7 @@ target_link_libraries(CemuInput PRIVATE
 if (ENABLE_WXWIDGETS)
 	target_link_libraries(CemuInput PRIVATE wx::base wx::core)
 endif()
+
+if(WIN32)
+	target_link_libraries(CemuInput PRIVATE hid)
+endif()

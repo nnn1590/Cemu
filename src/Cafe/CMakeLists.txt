@@ -46,5 +46,5 @@ if (ENABLE_WXWIDGETS)
 endif()
 
 if(WIN32)
-	target_link_libraries(CemuCafe PRIVATE iphlpapi)
+	target_link_libraries(CemuCafe PRIVATE iphlpapi ntdll hid)
 endif()

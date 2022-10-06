@@ -47,6 +47,10 @@ target_link_libraries(CemuAudio PRIVATE
 	CemuUtil
 )
 
+if(WIN32)
+	target_link_libraries(CemuAudio PRIVATE dsound)
+endif()
+
 if(ENABLE_CUBEB)
 	# PUBLIC because cubeb.h/cubeb.h is included in CubebAPI.h
 	target_link_libraries(CemuAudio PUBLIC cubeb::cubeb)

@@ -109,6 +109,10 @@ if (UNIX AND NOT APPLE)
 	find_package(X11 REQUIRED)
 endif()
 
+if (WIN32 AND NOT MSVC)
+	include_directories("dependencies/mingw-w64-winpthreads")
+endif()
+
 if (ENABLE_VULKAN)
 	include_directories("dependencies/Vulkan-Headers/include")
 endif()

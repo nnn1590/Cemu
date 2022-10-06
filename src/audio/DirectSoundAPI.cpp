@@ -5,6 +5,14 @@
 #include "util/helpers/helpers.h"
 #include "gui/guiWrapper.h"
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#	include "mingw-w64-winpthreads-thread.h"
+#	define GetWin32Handle(x) (__pth_gpointer_locked(x)->h)
+#else
+#	define GetWin32Handle(x) (x)
+#endif
+
+
 #pragma comment(lib, "Dsound.lib")
 
 std::wstring DirectSoundAPI::DirectSoundDeviceDescription::GetIdentifier() const
@@ -91,7 +99,7 @@ DirectSoundAPI::DirectSoundAPI(GUID* guid, sint32 samplerate, sint32 channels, s
 	m_running = true;
 	m_thread = std::thread(&DirectSoundAPI::AudioThread, this);
 #if BOOST_OS_WINDOWS
-	SetThreadPriority(m_thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL);
+	SetThreadPriority(GetWin32Handle(m_thread.native_handle()), THREAD_PRIORITY_TIME_CRITICAL);
 #endif
 }
 

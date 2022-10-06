@@ -11,7 +11,7 @@
 #include "boost/functional/hash_fwd.hpp"
 #include <fmt/format.h>
 
-#ifdef __clang__
+#ifndef _MSC_VER
 #include "Common/unix/fast_float.h"
  #define _EP_FROM_CHARS_DBL(...) _convFastFloatResult(fast_float::from_chars(__VA_ARGS__))
 

@@ -7,7 +7,7 @@
 #include "util/math/vector2.h"
 #include "util/math/vector3.h"
 
-#ifdef __clang__
+#ifndef _MSC_VER
 #include "Common/unix/fast_float.h"
 #endif
 
@@ -157,7 +157,7 @@ T ConvertString(std::string_view str)
 	{
 		// from_chars can't deal with float conversation starting with "+"
 		ltrim(str, "+");
-#ifdef __clang__
+#ifndef _MSC_VER
 		if (fast_float::from_chars(str.data(), str.data() + str.size(), result).ec == std::errc())
 			return result;
 #else

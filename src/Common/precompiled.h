@@ -233,7 +233,7 @@ inline uint64 _udiv128(uint64 highDividend, uint64 lowDividend, uint64 divisor, 
     #define UNREACHABLE
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_WIN32)
     #define DEBUG_BREAK __debugbreak()
 #else
     #include <csignal>

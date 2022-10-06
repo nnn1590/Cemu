@@ -17,6 +17,11 @@ if(WIN32)
 	target_sources(CemuAudio PRIVATE
 		DirectSoundAPI.cpp
 		DirectSoundAPI.h
+	)
+endif()
+
+if(ENABLE_XAUDIO)
+	target_sources(CemuAudio PRIVATE
 		XAudio2API.cpp
 		XAudio2API.h
 		XAudio27API.cpp

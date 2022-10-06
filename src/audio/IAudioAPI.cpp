@@ -1,8 +1,10 @@
 #include "IAudioAPI.h"
 
-#if BOOST_OS_WINDOWS
+#ifdef ENABLE_XAUDIO
 #include "XAudio2API.h"
 #include "XAudio27API.h"
+#endif
+#if BOOST_OS_WINDOWS
 #include "DirectSoundAPI.h"
 #endif
 #include "config/CemuConfig.h"
@@ -74,7 +76,7 @@ void IAudioAPI::InitializeStatic()
 {
 	s_audioDelay = GetConfig().audio_delay;
 
-#if BOOST_OS_WINDOWS
+#ifdef ENABLE_XAUDIO
 	s_availableApis[DirectSound] = true;
 	s_availableApis[XAudio2] = XAudio2API::InitializeStatic();
 	if(!s_availableApis[XAudio2]) // don't try to initialize the older lib if the newer version is available
@@ -107,6 +109,8 @@ AudioAPIPtr IAudioAPI::CreateDevice(AudioAPI api, const DeviceDescriptionPtr& de
 		const auto tmp = std::dynamic_pointer_cast<DirectSoundAPI::DirectSoundDeviceDescription>(device);
 		return std::make_unique<DirectSoundAPI>(tmp->GetGUID(), samplerate, channels, samples_per_block, bits_per_sample);
 	}
+#endif
+#ifdef ENABLE_XAUDIO
 	case XAudio27:
 	{
 		const auto tmp = std::dynamic_pointer_cast<XAudio27API::XAudio27DeviceDescription>(device);
@@ -140,6 +144,8 @@ std::vector<IAudioAPI::DeviceDescriptionPtr> IAudioAPI::GetDevices(AudioAPI api)
 	{
 		return DirectSoundAPI::GetDevices();
 	}
+#endif
+#ifdef ENABLE_XAUDIO
 	case XAudio27:
 	{
 		return XAudio27API::GetDevices();

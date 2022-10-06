@@ -117,6 +117,10 @@ if (ENABLE_OPENGL)
 	find_package(OpenGL REQUIRED)
 endif()
 
+if (ENABLE_XAUDIO)
+	add_compile_definitions(ENABLE_XAUDIO)
+endif()
+
 if (ENABLE_DISCORD_RPC)
 	add_compile_definitions(ENABLE_DISCORD_RPC)
 	add_subdirectory(dependencies/discord-rpc EXCLUDE_FROM_ALL)

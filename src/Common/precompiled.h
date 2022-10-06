@@ -326,6 +326,25 @@ bool match_any_of(T1 value, T2 compareTo, Types&&... others)
     return value == compareTo || match_any_of(value, others...);
 }
 
+#if defined(_WIN32) && !defined(_MSC_VER)
+[[nodiscard]] static long long _Query_perf_frequency() {
+	LARGE_INTEGER i;
+	if (!QueryPerformanceFrequency(&i)) {
+		const auto error = GetLastError();
+		throw std::runtime_error(fmt::format("QueryPerformanceFrequency failed (error: {:#x})", error));
+	}
+	return i.QuadPart;
+}
+[[nodiscard]] static long long _Query_perf_counter() {
+	LARGE_INTEGER i;
+	if (!QueryPerformanceCounter(&i)) {
+		const auto error = GetLastError();
+		throw std::runtime_error(fmt::format("QueryPerformanceCounter failed (error: {:#x})", error));
+	}
+	return i.QuadPart;
+}
+#endif
+
 // we cache the frequency in a static variable
 [[nodiscard]] static std::chrono::high_resolution_clock::time_point now_cached() noexcept
 {

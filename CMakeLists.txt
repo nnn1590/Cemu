@@ -8,7 +8,7 @@ if (EXPERIMENTAL_VERSION)
   add_definitions(-DEMULATOR_VERSION_MINOR=${EXPERIMENTAL_VERSION})
 endif()
 
-if (ENABLE_VCPKG)
+if (ENABLE_VCPKG AND NOT VCPKG_INITIALIZED)
 	set(VCPKG_OVERLAY_PORTS "${CMAKE_CURRENT_LIST_DIR}/dependencies/vcpkg_overlay_ports")
 	set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake"
 		CACHE STRING "Vcpkg toolchain file")

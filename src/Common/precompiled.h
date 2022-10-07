@@ -30,7 +30,7 @@
 #include <cmath>
 #include <ctime>
 #include <cassert>
-#include <immintrin.h>
+#include <intrin.h>
 
 // c++ includes
 #include <string>
@@ -260,7 +260,7 @@ inline uint64 _udiv128(uint64 highDividend, uint64 lowDividend, uint64 divisor, 
 #endif
 
 inline void cpuid(int cpuInfo[4], int functionId) {
-#if defined(_MSC_VER)
+#if defined(_WIN32)
     __cpuid(cpuInfo, functionId);
 #elif defined(__GNUC__)
     __cpuid(functionId, cpuInfo[0], cpuInfo[1], cpuInfo[2], cpuInfo[3]);

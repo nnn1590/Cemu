@@ -139,8 +139,6 @@ typedef struct tagTHREADNAME_INFO
 void SetThreadName(const char* name)
 {
 #if BOOST_OS_WINDOWS
-	
-#ifndef _PUBLIC_RELEASE
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
 	info.szName = name;
@@ -156,9 +154,6 @@ void SetThreadName(const char* name)
 	}
 #endif
 #pragma warning(pop)
-	
-#endif
-	
 #elif BOOST_OS_MACOS
 	pthread_setname_np(name);
 #else
@@ -313,11 +308,10 @@ bool TestWriteAccess(const fs::path& p)
 }
 
 // make path relative to Cemu directory
-fs::path MakeRelativePath(const fs::path& path)
+fs::path MakeRelativePath(const fs::path& base, const fs::path& path)
 {
 	try
 	{
-		const fs::path base = ActiveSettings::GetPath();
 		return fs::relative(path, base);
 	}
 	catch (const std::exception&)

@@ -32,8 +32,8 @@ VulkanPipelineStableCache& VulkanPipelineStableCache::GetInstance()
 uint32 VulkanPipelineStableCache::BeginLoading(uint64 cacheTitleId)
 {
 	std::error_code ec;
-	fs::create_directories(ActiveSettings::GetPath("shaderCache/transferable"), ec);
-	const auto pathCacheFile = ActiveSettings::GetPath("shaderCache/transferable/{:016x}_vkpipeline.bin", cacheTitleId);
+	fs::create_directories(ActiveSettings::GetCachePath("shaderCache/transferable"), ec);
+	const auto pathCacheFile = ActiveSettings::GetCachePath("shaderCache/transferable/{:016x}_vkpipeline.bin", cacheTitleId);
 	
 	// init cache loader state
 	g_vkCacheState.pipelineLoadIndex = 0;
@@ -214,6 +214,10 @@ void VulkanPipelineStableCache::LoadPipelineFromCache(std::span<uint8> fileData)
 	if (!DeserializePipeline(streamReader, *cachedPipeline))
 	{
 		// failed to deserialize
+		s_spinlockSharedInternal.acquire();
+		delete lcr;
+		delete cachedPipeline;
+		s_spinlockSharedInternal.release();
 		return;
 	}
 	// restored register view from compacted state

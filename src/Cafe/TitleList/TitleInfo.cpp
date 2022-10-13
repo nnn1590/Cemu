@@ -287,12 +287,11 @@ void TitleInfo::CalcUID()
 		m_uid = 0;
 		return;
 	}
-	std::error_code ec;
 	// get absolute normalized path
 	fs::path normalizedPath;
 	if (m_fullPath.is_relative())
 	{
-		normalizedPath = ActiveSettings::GetPath();
+		normalizedPath = ActiveSettings::GetUserDataPath();
 		normalizedPath /= m_fullPath;
 	}
 	else

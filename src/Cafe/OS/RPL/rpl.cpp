@@ -243,6 +243,7 @@ bool RPLLoader_ProcessHeaders(std::string_view moduleName, uint8* rplData, uint3
 	if (fileinfoSection->sectionSize < sizeof(RPLFileInfoData))
 	{
 		cemuLog_force("RPLLoader: FILEINFO section size is below expected size");
+		delete rplLoaderContext;
 		return false;
 	}
 
@@ -1014,7 +1015,7 @@ bool RPLLoader_FixImportSymbols(RPLModule* rplLoaderContext, sint32 symtabSectio
 				}
 				if (foundExport == false)
 				{
-#ifndef PUBLIC_RELEASE
+#ifdef CEMU_DEBUG_ASSERT
 					if (nameOffset > 0)
 					{
 						forceLogDebug_printf("export not found - force lookup in function exports");
@@ -1963,7 +1964,7 @@ void RPLLoader_AddDependency(const char* name)
 	if (rplLoader_currentTlsModuleIndex == 0x7FFF)
 		cemuLog_force("RPLLoader: Exhausted TLS module indices pool");
 	// convert name to path/filename if it isn't already one
-	if (strstr(name, "."))
+	if (strchr(name, '.'))
 	{
 		strcpy_s(newDependency->filepath, name);
 	}
@@ -2115,7 +2116,7 @@ void RPLLoader_LoadDependency(rplDependency_t* dependency)
 	// attempt to load rpl from Cemu's /cafeLibs/ directory
 	if (ActiveSettings::LoadSharedLibrariesEnabled())
 	{
-		const auto filePath = ActiveSettings::GetPath("cafeLibs/{}", dependency->filepath);
+		const auto filePath = ActiveSettings::GetUserDataPath("cafeLibs/{}", dependency->filepath);
 		auto fileData = FileStream::LoadIntoMemory(filePath);
 		if (fileData)
 		{

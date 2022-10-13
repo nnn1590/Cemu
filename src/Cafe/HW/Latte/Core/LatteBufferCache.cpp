@@ -29,7 +29,7 @@ class IntervalTree2
 
 	struct InternalRange
 	{
-		InternalRange() {};
+		InternalRange() = default;
 		InternalRange(TRangeData _rangeBegin, TRangeData _rangeEnd) : rangeBegin(_rangeBegin), rangeEnd(_rangeEnd) { cemu_assert_debug(_rangeBegin < _rangeEnd); };
 
 		TRangeData rangeBegin;
@@ -87,7 +87,7 @@ public:
 				return; // do nothing if added range is already covered
 			rangeBegin = (std::min)(rangeBegin, (*itr).first.rangeBegin);
 			// DEBUG - make sure this is the start point of the merge process (the first entry that starts below minValue)
-#ifndef PUBLIC_RELEASE
+#ifdef CEMU_DEBUG_ASSERT
 			if (itr != m_map.cbegin())
 			{
 				// check previous result

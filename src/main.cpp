@@ -8,6 +8,7 @@
 #include "Cafe/GameProfile/GameProfile.h"
 #include "Cafe/GraphicPack/GraphicPack2.h"
 #include "config/CemuConfig.h"
+#include "config/NetworkSettings.h"
 #include "gui/CemuApp.h"
 #include "Cafe/HW/Latte/Core/LatteOverlay.h"
 #include "config/LaunchSettings.h"
@@ -160,7 +161,7 @@ void _putenvSafe(const char* c)
 void reconfigureGLDrivers()
 {
 	// reconfigure GL drivers to store 
-	const fs::path nvCacheDir = ActiveSettings::GetPath("shaderCache/driver/nvidia/");
+	const fs::path nvCacheDir = ActiveSettings::GetCachePath("shaderCache/driver/nvidia/");
 
 	std::error_code err;
 	fs::create_directories(nvCacheDir, err);
@@ -216,6 +217,8 @@ void mainEmulatorCommonInit()
     ExceptionHandler_init();
 	// read config
 	g_config.Load();
+	if (NetworkConfig::XMLExists())
+	n_config.Load();
 	// symbol storage
 	rplSymbolStorage_init();
 	// static initialization
@@ -242,11 +245,9 @@ void unitTests()
 
 int mainEmulatorHLE()
 {
-	if (!TestWriteAccess(ActiveSettings::GetPath()))
-		wxMessageBox("Cemu doesn't have write access to it's own directory.\nPlease move it to a different location or run Cemu as administrator!", "Warning", wxOK|wxICON_ERROR); // todo - different error messages per OS
 	LatteOverlay_init();
 	// run a couple of tests if in non-release mode
-#ifndef PUBLIC_RELEASE
+#ifdef CEMU_DEBUG_ASSERT
 	unitTests();
 #endif
 	// init common
@@ -264,7 +265,7 @@ int mainEmulatorHLE()
 	// init Cafe system (todo - the stuff above should be part of this too)
 	CafeSystem::Initialize();
 	// init title list
-	CafeTitleList::Initialize(ActiveSettings::GetPath("title_list_cache.xml"));
+	CafeTitleList::Initialize(ActiveSettings::GetUserDataPath("title_list_cache.xml"));
 	for (auto& it : GetConfig().game_paths)
 		CafeTitleList::AddScanPath(it);
 	fs::path mlcPath = ActiveSettings::GetMlcPath();
@@ -278,8 +279,6 @@ int mainEmulatorHLE()
 		CafeSaveList::SetMLCPath(mlcPath);
 		CafeSaveList::Refresh();
 	}
-	// Create UI
-	gui_create();
 	return 0;
 }
 
@@ -338,39 +337,28 @@ void ToolShaderCacheMerger();
 
 #if BOOST_OS_WINDOWS
 
-#ifndef PUBLIC_RELEASE
-#include <crtdbg.h>
-int wmain(int argc, wchar_t* argv[])
-{
-	SDL_SetMainReady();
-	_CrtSetDbgFlag(_CRTDBG_CHECK_DEFAULT_DF);
-	//ToolShaderCacheMerger();
-
-	if (!LaunchSettings::HandleCommandline(argc, argv))
-		return 0;	
-
-	ActiveSettings::LoadOnce();
-	
-	HandlePostUpdate();
-	return mainEmulatorHLE();
-}
-#else
+// entrypoint for release builds
 int wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
 	SDL_SetMainReady();
-
 	if (!LaunchSettings::HandleCommandline(lpCmdLine))
 		return 0;
-
-	ActiveSettings::LoadOnce();
-
-	HandlePostUpdate();
-	return mainEmulatorHLE();
+	gui_create();
+	return 0;
 }
 
-#endif
+// entrypoint for debug builds with console
+int main(int argc, char* argv[])
+{
+	SDL_SetMainReady();
+	if (!LaunchSettings::HandleCommandline(argc, argv))
+		return 0;
+	gui_create();
+	return 0;
+}
 
 #else
+
 int main(int argc, char *argv[])
 {
 #if BOOST_OS_LINUX
@@ -378,11 +366,8 @@ int main(int argc, char *argv[])
 #endif
     if (!LaunchSettings::HandleCommandline(argc, argv))
 		return 0;
-
-	ActiveSettings::LoadOnce();
-
-	HandlePostUpdate();
-	return mainEmulatorHLE();
+	gui_create();
+	return 0;
 }
 #endif
 

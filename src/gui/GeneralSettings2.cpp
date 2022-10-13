@@ -14,6 +14,7 @@
 #include <wx/hyperlink.h>
 
 #include "config/CemuConfig.h"
+#include "config/NetworkSettings.h"
 
 #include "audio/IAudioAPI.h"
 #if BOOST_OS_WINDOWS
@@ -39,9 +40,7 @@
 #include "config/ActiveSettings.h"
 #include "gui/helpers/wxHelpers.h"
 
-#if BOOST_OS_LINUX || BOOST_OS_MACOS
 #include "resource/embedded/resources.h"
-#endif
 
 #include "Cafe/CafeSystem.h"
 #include "Cemu/ncrypto/ncrypto.h"
@@ -606,6 +605,16 @@ wxPanel* GeneralSettings2::AddAccountPage(wxNotebook* notebook)
 		content->Add(m_delete_account, 0, wxEXPAND | wxALL | wxALIGN_RIGHT, 5);
 		m_delete_account->Bind(wxEVT_BUTTON, &GeneralSettings2::OnAccountDelete, this);
 
+		wxString choices[] = { _("Nintendo"), _("Pretendo"), _("Custom") };
+		m_active_service = new wxRadioBox(online_panel, wxID_ANY, _("Network Service"), wxDefaultPosition, wxDefaultSize, std::size(choices), choices, 3, wxRA_SPECIFY_COLS);
+		if (!NetworkConfig::XMLExists())
+			m_active_service->Enable(2, false);
+
+
+		m_active_service->SetToolTip(_("Connect to which Network Service"));
+		m_active_service->Bind(wxEVT_RADIOBOX, &GeneralSettings2::OnAccountServiceChanged,this);
+		content->Add(m_active_service, 0, wxEXPAND | wxALL, 5);
+
 		box_sizer->Add(content, 1, wxEXPAND, 5);
 
 		online_panel_sizer->Add(box_sizer, 0, wxEXPAND | wxALL, 5);
@@ -615,6 +624,7 @@ wxPanel* GeneralSettings2::AddAccountPage(wxNotebook* notebook)
 			m_active_account->Enable(false);
 			m_create_account->Enable(false);
 			m_delete_account->Enable(false);
+			m_active_service->Enable(false);
 		}
 	}
 	
@@ -630,7 +640,7 @@ wxPanel* GeneralSettings2::AddAccountPage(wxNotebook* notebook)
 		row->SetFlexibleDirection(wxBOTH);
 		row->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 		
-		const wxImage tmp = wxBITMAP_PNG(PNG_ERROR).ConvertToImage();
+		const wxImage tmp = wxBITMAP_PNG_FROM_DATA(PNG_ERROR).ConvertToImage();
 		m_validate_online = new wxBitmapButton(box, wxID_ANY, tmp.Scale(16, 16));
 		m_validate_online->Bind(wxEVT_BUTTON, &GeneralSettings2::OnShowOnlineValidator, this);
 		row->Add(m_validate_online, 0, wxEXPAND | wxALL, 5);
@@ -711,10 +721,18 @@ wxPanel* GeneralSettings2::AddDebugPage(wxNotebook* notebook)
 
 	debug_row->Add(new wxStaticText(panel, wxID_ANY, _("Crash dump"), wxDefaultPosition, wxDefaultSize, 0), 0, wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
+#if BOOST_OS_WINDOWS
 	wxString dump_choices[] = { _("Disabled"), _("Lite"), _("Full") };
+#elif BOOST_OS_UNIX
+	wxString dump_choices[] = { _("Disabled"), _("Enabled") };
+#endif
 	m_crash_dump = new wxChoice(panel, wxID_ANY, wxDefaultPosition, wxDefaultSize, std::size(dump_choices), dump_choices);
 	m_crash_dump->SetSelection(0);
+#if BOOST_OS_WINDOWS
 	m_crash_dump->SetToolTip(_("Creates a dump when Cemu crashes\nOnly enable when requested by a developer!\nThe Full option will create a very large dump file (includes a full RAM dump of the Cemu process)"));
+#elif BOOST_OS_UNIX
+	m_crash_dump->SetToolTip(_("Creates a core dump when Cemu crashes\nOnly enable when requested by a developer!"));
+#endif
 	debug_row->Add(m_crash_dump, 0, wxALL | wxEXPAND, 5);
 
 	debug_panel_sizer->Add(debug_row, 0, wxALL | wxEXPAND, 5);
@@ -843,7 +861,7 @@ void GeneralSettings2::StoreConfig()
 	config.tv_volume = m_tv_volume->GetValue();
 	config.pad_volume = m_pad_volume->GetValue();
 
-	config.tv_device = L"";
+	config.tv_device.clear();
 	const auto tv_device = m_tv_device->GetSelection();
 	if (tv_device != wxNOT_FOUND && tv_device != 0 && m_tv_device->HasClientObjectData())
 	{
@@ -852,7 +870,7 @@ void GeneralSettings2::StoreConfig()
 			config.tv_device = device_description->GetDescription()->GetIdentifier();
 	}
 
-	config.pad_device = L"";
+	config.pad_device.clear();
 	const auto pad_device = m_pad_device->GetSelection();
 	if (pad_device != wxNOT_FOUND && pad_device != 0 && m_pad_device->HasClientObjectData())
 	{
@@ -913,6 +931,7 @@ void GeneralSettings2::StoreConfig()
 		config.account.m_persistent_id = dynamic_cast<wxAccountData*>(m_active_account->GetClientObject(active_account))->GetAccount().GetPersistentId();
 
 	config.account.online_enabled = m_online_enabled->GetValue();
+	config.account.active_service = m_active_service->GetSelection();
 
 	// debug
 	config.crash_dump = (CrashDump)m_crash_dump->GetSelection();
@@ -1220,7 +1239,7 @@ void GeneralSettings2::UpdateAccountInformation()
 	const auto selection = m_active_account->GetSelection();
 	if(selection == wxNOT_FOUND)
 	{
-		m_validate_online->SetBitmap(wxBITMAP_PNG(PNG_ERROR).ConvertToImage().Scale(16, 16));
+		m_validate_online->SetBitmap(wxBITMAP_PNG_FROM_DATA(PNG_ERROR).ConvertToImage().Scale(16, 16));
 		m_validate_online->SetWindowStyleFlag(m_validate_online->GetWindowStyleFlag() & ~wxBORDER_NONE);
 		ResetAccountInformation();
 		return;
@@ -1253,12 +1272,12 @@ void GeneralSettings2::UpdateAccountInformation()
 	{
 		
 		m_online_status->SetLabel(_("Your account is a valid online account"));
-		m_validate_online->SetBitmap(wxBITMAP_PNG(PNG_CHECK_YES).ConvertToImage().Scale(16, 16));
+		m_validate_online->SetBitmap(wxBITMAP_PNG_FROM_DATA(PNG_CHECK_YES).ConvertToImage().Scale(16, 16));
 		m_validate_online->SetWindowStyleFlag(m_validate_online->GetWindowStyleFlag() | wxBORDER_NONE);
 	}
 	else
 	{
-		m_validate_online->SetBitmap(wxBITMAP_PNG(PNG_ERROR).ConvertToImage().Scale(16, 16));
+		m_validate_online->SetBitmap(wxBITMAP_PNG_FROM_DATA(PNG_ERROR).ConvertToImage().Scale(16, 16));
 		m_validate_online->SetWindowStyleFlag(m_validate_online->GetWindowStyleFlag() & ~wxBORDER_NONE);
 	}
 	
@@ -1482,6 +1501,7 @@ void GeneralSettings2::ApplyConfig()
 	}
 	
 	m_online_enabled->SetValue(config.account.online_enabled);
+	m_active_service->SetSelection(config.account.active_service);
 	UpdateAccountInformation();
 
 	// debug
@@ -1714,6 +1734,13 @@ void GeneralSettings2::OnActiveAccountChanged(wxCommandEvent& event)
 {
 	UpdateAccountInformation();
 	m_has_account_change = true;
+}
+
+void GeneralSettings2::OnAccountServiceChanged(wxCommandEvent& event)
+{
+	LaunchSettings::ChangeNetworkServiceURL(m_active_service->GetSelection());
+
+	UpdateAccountInformation();
 }
 
 void GeneralSettings2::OnMLCPathSelect(wxCommandEvent& event)
